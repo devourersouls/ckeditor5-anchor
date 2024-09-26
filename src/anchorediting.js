@@ -420,7 +420,6 @@ export default class AnchorEditing extends Plugin {
 			deletedContent = false;
 
 			const buffer = new ChangeBuffer( editor.model );
-			console.log(buffer)
 			// Enabled only when typing.
 			if ( !buffer.batch.isTyping ) {
 				return;
