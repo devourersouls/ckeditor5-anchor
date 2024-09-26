@@ -20,29 +20,29 @@ const URL_REG_EXP = new RegExp(
 	'(^|\\s)' +
 	// Group 2: Detected URL (or e-mail).
 	'(' +
-		// Protocol identifier or short syntax "//"
-		// a. Full form http://user@foo.bar.baz:8080/foo/bar.html#baz?foo=bar
-		'(' +
-			'(?:(?:(?:https?|ftp):)?\\/\\/)' +
-			// BasicAuth using user:pass (optional)
-			'(?:\\S+(?::\\S*)?@)?' +
-			'(?:' +
-				// Host & domain names.
-				'(?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+' +
-				// TLD identifier name.
-				'(?:[a-z\\u00a1-\\uffff]{2,})' +
-			')' +
-			// port number (optional)
-			'(?::\\d{2,5})?' +
-			// resource path (optional)
-			'(?:[/?#]\\S*)?' +
-		')' +
-		'|' +
-		// b. Short form (either www.example.com or example@example.com)
-		'(' +
-			'(www.|(\\S+@))' +
-			// Host & domain names.
-			'((?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.))+' +
+	// Protocol identifier or short syntax "//"
+	// a. Full form http://user@foo.bar.baz:8080/foo/bar.html#baz?foo=bar
+	'(' +
+	'(?:(?:(?:https?|ftp):)?\\/\\/)' +
+	// BasicAuth using user:pass (optional)
+	'(?:\\S+(?::\\S*)?@)?' +
+	'(?:' +
+	// Host & domain names.
+	'(?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+' +
+	// TLD identifier name.
+	'(?:[a-z\\u00a1-\\uffff]{2,})' +
+	')' +
+	// port number (optional)
+	'(?::\\d{2,5})?' +
+	// resource path (optional)
+	'(?:[/?#]\\S*)?' +
+	')' +
+	'|' +
+	// b. Short form (either www.example.com or example@example.com)
+	'(' +
+	'(www.|(\\S+@))' +
+	// Host & domain names.
+	'((?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.))+' +
 	// TLD identifier name.
 	'(?:[a-z\\u00a1-\\uffff]{2,})' +
 	')' +
@@ -113,7 +113,7 @@ export default class AutoAnchor extends Plugin {
 		watcher.on( 'matched:data', ( evt, data ) => {
 			const { batch, range, url } = data;
 
-			if ( !input.isInput( batch ) ) {
+			if ( !batch.isTyping() ) {
 				return;
 			}
 

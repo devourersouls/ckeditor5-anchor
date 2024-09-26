@@ -21,6 +21,7 @@ import { keyCodes } from '@ckeditor/ckeditor5-utils/src/keyboard';
 import { createAnchorElement, ensureSafeUrl, getLocalizedDecorators, normalizeDecorators } from './utils';
 
 import '../theme/anchor.css';
+import ChangeBuffer from "@ckeditor/ckeditor5-typing/src/utils/changebuffer";
 
 const HIGHLIGHT_CLASS = 'ck-anchor_selected';
 const DECORATOR_AUTOMATIC = 'automatic';
@@ -76,8 +77,8 @@ export default class AnchorEditing extends Plugin {
 
 		editor.conversion.for( 'editingDowncast' )
 			.attributeToElement( { model: 'anchorId', view: ( id, conversionApi ) => {
-				return createAnchorElement( ensureSafeUrl( id ), conversionApi );
-			} } );
+					return createAnchorElement( ensureSafeUrl( id ), conversionApi );
+				} } );
 
 		editor.conversion.for( 'upcast' )
 			.elementToAttribute( {
@@ -387,8 +388,9 @@ export default class AnchorEditing extends Plugin {
 
 		// Listening to `model#deleteContent` allows detecting whether selected content was a anchor.
 		// If so, before removing the element, we will copy its attributes.
-		this.listenTo( editor.model, 'deleteContent', () => {
+		this.listenTo( editor.model, 'deleteContent', (evt, data) => {
 			const selection = editor.model.document.selection;
+			const { batch, range, url } = data;
 
 			// Copy attributes only if anything is selected.
 			if ( selection.isCollapsed ) {
@@ -403,7 +405,7 @@ export default class AnchorEditing extends Plugin {
 			}
 
 			// Enabled only when typing.
-			if ( !isTyping( editor ) ) {
+			if ( !batch.isTyping() ) {
 				return;
 			}
 
@@ -417,8 +419,10 @@ export default class AnchorEditing extends Plugin {
 		this.listenTo( editor.model, 'insertContent', ( evt, [ element ] ) => {
 			deletedContent = false;
 
+			const buffer = new ChangeBuffer( editor.model );
+			console.log(buffer)
 			// Enabled only when typing.
-			if ( !isTyping( editor ) ) {
+			if ( !buffer.batch.isTyping ) {
 				return;
 			}
 
@@ -573,5 +577,5 @@ function shouldCopyAttributes( model ) {
 function isTyping( editor ) {
 	const input = editor.plugins.get( 'Input' );
 
-	return input.isInput( editor.model.change( writer => writer.batch ) );
+	return editor.model.change( writer => writer.batch.isTyping() );
 }
